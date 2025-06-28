@@ -60,31 +60,31 @@
 
   <script>
     function predecir() {
-      // Coeficientes simulados del modelo (basado en entrenamiento en Python)
-      const beta0 = -1.2;
-      const beta_ip = 2.0;
-      const beta_min = 0.03;
-      const beta_conex = 0.01;
+    // Coeficientes reales del modelo de regresión logística
+    const beta0 = 0.8813;
+    const beta_ip = 1.5883;
+    const beta_min = -0.1803;
+    const beta_conex = -0.0568;
 
-      const ip = document.getElementById("ipExtranjera").checked ? 1 : 0;
-      const min = parseFloat(document.getElementById("minutosConexion").value || 0);
-      const conex = parseFloat(document.getElementById("nConexiones").value || 0);
+    const ip = document.getElementById("ipExtranjera").checked ? 1 : 0;
+    const min = parseFloat(document.getElementById("minutosConexion").value || 0);
+    const conex = parseFloat(document.getElementById("nConexiones").value || 0);
 
-      // Modelo logístico
-      const z = beta0 + beta_ip * ip + beta_min * min + beta_conex * conex;
-      const proba = 1 / (1 + Math.exp(-z));
+    // Modelo logístico
+    const z = beta0 + beta_ip * ip + beta_min * min + beta_conex * conex;
+    const proba = 1 / (1 + Math.exp(-z));
 
-      const resultadoDiv = document.getElementById("resultado");
-      resultadoDiv.style.display = "block";
+    const resultadoDiv = document.getElementById("resultado");
+    resultadoDiv.style.display = "block";
 
-      const umbral = 0.65;
-      if (proba >= umbral) {
+    const umbral = 0.65;
+    if (proba >= umbral) {
         resultadoDiv.textContent = `⚠️ Alta probabilidad de intruso (${(proba * 100).toFixed(2)}%)`;
         resultadoDiv.className = "resultado intruso";
-      } else {
+    } else {
         resultadoDiv.textContent = `✅ Conexión segura (${(proba * 100).toFixed(2)}%)`;
         resultadoDiv.className = "resultado no-intruso";
-      }
+    }
     }
   </script>
 
