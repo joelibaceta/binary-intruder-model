@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulador de Detección de Intrusos</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f4f4f4;
+      padding: 2em;
+      max-width: 500px;
+      margin: auto;
+    }
+    h2 {
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 1em;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.5em;
+      font-size: 1em;
+      margin-top: 0.3em;
+    }
+    .resultado {
+      margin-top: 2em;
+      font-size: 1.2em;
+      font-weight: bold;
+      padding: 1em;
+      border-radius: 5px;
+    }
+    .intruso { background: #ffe5e5; color: #b10000; }
+    .no-intruso { background: #e5ffe5; color: #007500; }
+  </style>
+</head>
+<body>
+
+  <h2>Simulador de Detección de Intrusos</h2>
+
+  <label>
+    ¿IP Extranjera?
+    <input type="checkbox" id="ipExtranjera">
+  </label>
+
+  <label>
+    Minutos de Conexión:
+    <input type="number" id="minutosConexion" min="0" step="1">
+  </label>
+
+  <label>
+    Nº Conexiones a U3M:
+    <input type="number" id="nConexiones" min="0" step="1">
+  </label>
+
+  <button onclick="predecir()">Evaluar Riesgo</button>
+
+  <div id="resultado" class="resultado" style="display:none;"></div>
+
+  <script>
+    function predecir() {
+      // Coeficientes simulados del modelo (basado en entrenamiento en Python)
+      const beta0 = -1.2;
+      const beta_ip = 2.0;
+      const beta_min = 0.03;
+      const beta_conex = 0.01;
+
+      const ip = document.getElementById("ipExtranjera").checked ? 1 : 0;
+      const min = parseFloat(document.getElementById("minutosConexion").value || 0);
+      const conex = parseFloat(document.getElementById("nConexiones").value || 0);
+
+      // Modelo logístico
+      const z = beta0 + beta_ip * ip + beta_min * min + beta_conex * conex;
+      const proba = 1 / (1 + Math.exp(-z));
+
+      const resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.style.display = "block";
+
+      const umbral = 0.35;
+      if (proba >= umbral) {
+        resultadoDiv.textContent = `⚠️ Alta probabilidad de intruso (${(proba * 100).toFixed(2)}%)`;
+        resultadoDiv.className = "resultado intruso";
+      } else {
+        resultadoDiv.textContent = `✅ Conexión segura (${(proba * 100).toFixed(2)}%)`;
+        resultadoDiv.className = "resultado no-intruso";
+      }
+    }
+  </script>
+
+</body>
+</html>
