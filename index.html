@@ -16,13 +16,24 @@
     }
     label {
       display: block;
-      margin-top: 1em;
+      margin-top: 1.5em;
     }
-    input, button {
+    input[type="range"] {
       width: 100%;
-      padding: 0.5em;
+    }
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-left: 0.5em;
+    }
+    .value {
+      font-weight: bold;
+      float: right;
+    }
+    button {
+      width: 100%;
+      padding: 0.7em;
       font-size: 1em;
-      margin-top: 0.3em;
+      margin-top: 1.5em;
     }
     .resultado {
       margin-top: 2em;
@@ -45,13 +56,13 @@
   </label>
 
   <label>
-    Minutos de Conexión:
-    <input type="number" id="minutosConexion" min="0" step="1">
+    Minutos de Conexión: <span id="minutosVal" class="value">0</span>
+    <input type="range" id="minutosConexion" min="0" max="120" value="0" oninput="document.getElementById('minutosVal').textContent = this.value">
   </label>
 
   <label>
-    Nº Conexiones a U3M:
-    <input type="number" id="nConexiones" min="0" step="1">
+    Nº Conexiones a U3M: <span id="conexVal" class="value">0</span>
+    <input type="range" id="nConexiones" min="0" max="50" value="0" oninput="document.getElementById('conexVal').textContent = this.value">
   </label>
 
   <button onclick="predecir()">Evaluar Riesgo</button>
@@ -60,31 +71,29 @@
 
   <script>
     function predecir() {
-    // Coeficientes reales del modelo de regresión logística
-    const beta0 = 0.8813;
-    const beta_ip = 1.5883;
-    const beta_min = -0.1803;
-    const beta_conex = -0.0568;
+      const beta0 = 0.8813;
+      const beta_ip = 1.5883;
+      const beta_min = -0.1803;
+      const beta_conex = -0.0568;
 
-    const ip = document.getElementById("ipExtranjera").checked ? 1 : 0;
-    const min = parseFloat(document.getElementById("minutosConexion").value || 0);
-    const conex = parseFloat(document.getElementById("nConexiones").value || 0);
+      const ip = document.getElementById("ipExtranjera").checked ? 1 : 0;
+      const min = parseFloat(document.getElementById("minutosConexion").value || 0);
+      const conex = parseFloat(document.getElementById("nConexiones").value || 0);
 
-    // Modelo logístico
-    const z = beta0 + beta_ip * ip + beta_min * min + beta_conex * conex;
-    const proba = 1 / (1 + Math.exp(-z));
+      const z = beta0 + beta_ip * ip + beta_min * min + beta_conex * conex;
+      const proba = 1 / (1 + Math.exp(-z));
 
-    const resultadoDiv = document.getElementById("resultado");
-    resultadoDiv.style.display = "block";
+      const resultadoDiv = document.getElementById("resultado");
+      resultadoDiv.style.display = "block";
 
-    const umbral = 0.65;
-    if (proba >= umbral) {
+      const umbral = 0.65;
+      if (proba >= umbral) {
         resultadoDiv.textContent = `⚠️ Alta probabilidad de intruso (${(proba * 100).toFixed(2)}%)`;
         resultadoDiv.className = "resultado intruso";
-    } else {
+      } else {
         resultadoDiv.textContent = `✅ Conexión segura (${(proba * 100).toFixed(2)}%)`;
         resultadoDiv.className = "resultado no-intruso";
-    }
+      }
     }
   </script>
 
